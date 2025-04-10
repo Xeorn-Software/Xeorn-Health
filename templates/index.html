@@ -1,0 +1,1387 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RWANA Health Voice Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #8338ec;
+            --success-color: #38b000;
+            --warning-color: #ffbe0b;
+            --danger-color: #ff006e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            border-bottom: none;
+            padding: 15px 20px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .btn {
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2a75e0;
+            border-color: #2a75e0;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .recording-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--danger-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 auto;
+        }
+        
+        .recording-button:hover {
+            background-color: #e3005f;
+            transform: scale(1.05);
+        }
+        
+        .recording-button.recording {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 0, 110, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 110, 0); }
+        }
+        
+        .response-area {
+            min-height: 200px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 300px;
+            background-color: white;
+        }
+        
+        .language-toggle {
+            margin-bottom: 20px;
+        }
+        
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            margin-right: 10px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .chat-bubble {
+            padding: 12px 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            position: relative;
+            max-width: 80%;
+        }
+        
+        .chat-bubble.user {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-top-right-radius: 2px;
+        }
+        
+        .chat-bubble.assistant {
+            background-color: #e9ecef;
+            color: #212529;
+            margin-right: auto;
+            border-top-left-radius: 2px;
+        }
+        
+        .breathing-container {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-color: rgba(58, 134, 255, 0.1);
+        }
+        
+        .breathing-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: rgba(58, 134, 255, 0.5);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .breathing-text {
+            position: absolute;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .appointment-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .tab-pane {
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .bg-secondary-custom {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary-custom {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-10 text-center">
+                <h1 class="fw-bold text-primary">RWANA Health Voice Assistant</h1>
+                <p class="lead">Rural and Urban Wellness Network Assistant for Rwandan communities</p>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="languageSelect" class="form-label">Language/Ururimi:</label>
+                    <select id="languageSelect" class="form-select">
+                        <option value="rw-RW">Kinyarwanda</option>
+                        <option value="en-US">English</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="health-tab" data-bs-toggle="tab" data-bs-target="#health-tab-pane" type="button" role="tab" aria-controls="health-tab-pane" aria-selected="true">
+                    <i class="bi bi-heart-pulse"></i> Health Assistant
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="mental-tab" data-bs-toggle="tab" data-bs-target="#mental-tab-pane" type="button" role="tab" aria-controls="mental-tab-pane" aria-selected="false">
+                    <i class="bi bi-emoji-smile"></i> Mental Wellness
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="breathing-tab" data-bs-toggle="tab" data-bs-target="#breathing-tab-pane" type="button" role="tab" aria-controls="breathing-tab-pane" aria-selected="false">
+                    <i class="bi bi-wind"></i> Breathing Exercises
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="appointment-tab" data-bs-toggle="tab" data-bs-target="#appointment-tab-pane" type="button" role="tab" aria-controls="appointment-tab-pane" aria-selected="false">
+                    <i class="bi bi-calendar-check"></i> Appointments
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="health-tracking-tab" data-bs-toggle="tab" data-bs-target="#health-tracking-tab-pane" type="button" role="tab" aria-controls="health-tracking-tab-pane" aria-selected="false">
+                    <i class="bi bi-activity"></i> Health Tracking
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="myTabContent">
+            <!-- Health Assistant Tab -->
+            <div class="tab-pane fade show active" id="health-tab-pane" role="tabpanel" aria-labelledby="health-tab" tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="bi bi-heart-pulse"></i> Ask a Medical Question</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Text Input Form -->
+                                <form id="textForm" class="mb-4">
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="textInput" class="form-control" placeholder="Type your medical question here...">
+                                        <input type="hidden" id="textMode" value="health">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-send"></i> Submit
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <!-- Voice Input Section -->
+                                <div class="text-center mb-4">
+                                    <p>Or use voice input</p>
+                                    <div id="recordButton" class="recording-button">
+                                        <i class="bi bi-mic-fill"></i>
+                                    </div>
+                                    <p id="recordingStatus" class="mt-2">Click to start recording</p>
+                                </div>
+
+                                <!-- Chat History Area -->
+                                <div class="card">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Conversation</h5>
+                                        <button id="clearChat" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-trash"></i> Clear
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="chatHistory" class="mb-3">
+                                            <!-- Chat bubbles will be inserted here -->
+                                        </div>
+                                        <div id="responseArea" class="response-area">
+                                            Welcome to RWANA Health Assistant. How can I help you today?
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doctor Contact Card -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="mb-0"><i class="bi bi-telephone"></i> Emergency Contact</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="bi bi-info-circle"></i> Need to speak with a healthcare professional?</p>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="doctorDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-person-badge"></i> Select a Specialist
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="doctorDropdown">
+                                                {% for specialty, number in doctors.items() %}
+                                                <li><a class="dropdown-item doctor-option" data-number="{{ number }}" data-specialty="{{ specialty }}" href="#"> {{ specialty }} </a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <button id="sendSmsBtn" class="btn btn-danger" disabled>
+                                            <i class="bi bi-envelope"></i> Notify via SMS
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mental Health Tab -->
+            <div class="tab-pane fade" id="mental-tab-pane" role="tabpanel" aria-labelledby="mental-tab" tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-secondary-custom text-white">
+                                <h5 class="mb-0"><i class="bi bi-emoji-smile"></i> Mental Wellness Support</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="lead">Talk about your feelings, stress, or anxiety. Our AI assistant is here to help.</p>
+                                
+                                <!-- Text Input Form -->
+                                <form id="mentalHealthForm" class="mb-4">
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="mentalHealthInput" class="form-control" placeholder="How are you feeling today?">
+                                        <input type="hidden" id="mentalHealthMode" value="mental_health">
+                                        <button type="submit" class="btn btn-secondary-custom">
+                                            <i class="bi bi-send"></i> Submit
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <!-- Mental Health Chat History -->
+                                <div class="card">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Conversation</h5>
+                                        <button id="clearMentalChat" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-trash"></i> Clear
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="mentalChatHistory" class="mb-3">
+                                            <!-- Chat bubbles will be inserted here -->
+                                        </div>
+                                        <div id="mentalResponseArea" class="response-area">
+                                            Welcome to the Mental Wellness Support. How are you feeling today?
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breathing Exercises Tab -->
+            <div class="tab-pane fade" id="breathing-tab-pane" role="tabpanel" aria-labelledby="breathing-tab" tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="bi bi-wind"></i> Breathing Exercises</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <p class="lead mb-4">Follow along with these breathing exercises to help reduce stress and anxiety.</p>
+                                
+                                <div class="mb-4">
+                                    <select id="breathingExerciseSelect" class="form-select form-select-lg w-50 mx-auto" aria-label="Select breathing exercise type" title="Breathing Exercise Types">
+                                        <option value="box">Box Breathing (4-4-4-4)</option>
+                                        <option value="478">4-7-8 Breathing</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="breathing-container mb-4">
+                                    <div class="breathing-circle" id="breathingCircle"></div>
+                                    <div class="breathing-text" id="breathingText">Ready</div>
+                                </div>
+                                
+                                <button id="startBreathingBtn" class="btn btn-success btn-lg">
+                                    <i class="bi bi-play-fill"></i> Start Exercise
+                                </button>
+                                
+                                <div class="mt-4">
+                                    <h5>Benefits of Breathing Exercises:</h5>
+                                    <ul class="list-group text-start w-75 mx-auto">
+                                        <li class="list-group-item">
+                                            <i class="bi bi-check-circle-fill text-success"></i> Reduces stress and anxiety
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="bi bi-check-circle-fill text-success"></i> Lowers blood pressure
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="bi bi-check-circle-fill text-success"></i> Improves focus and concentration
+                                        </li>
+                                        <li class="list-group-item">
+                                            <i class="bi bi-check-circle-fill text-success"></i> Helps with sleep quality
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Tab -->
+            <div class="tab-pane fade" id="appointment-tab-pane" role="tabpanel" aria-labelledby="appointment-tab" tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Schedule an Appointment</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="lead">Schedule a follow-up appointment with a healthcare professional</p>
+                                
+                                <form id="appointmentForm" class="mb-4">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="appointmentDate" class="form-label">Date and Time</label>
+                                            <input type="datetime-local" class="form-control" id="appointmentDate" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="specialtySelect" class="form-label">Medical Specialty</label>
+                                            <select class="form-select" id="specialtySelect" required aria-label="Select a medical specialty" title="Medical Specialty">
+                                                <option value="" selected disabled>Choose a specialty</option>
+                                                {% for specialty, number in doctors.items() %}
+                                                <option value="{{ specialty }}">{{ specialty }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="bi bi-calendar-plus"></i> Schedule Appointment
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                
+                                <hr>
+                                
+                                <h5>Your Appointments</h5>
+                                <div id="appointmentsList" class="mt-3">
+                                    <p class="text-muted">No appointments scheduled yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Tracking Tab -->
+            <div class="tab-pane fade" id="health-tracking-tab-pane" role="tabpanel" aria-labelledby="health-tracking-tab" tabindex="0">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="bi bi-activity"></i> Health Metrics Tracking</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="lead">Track and monitor your health metrics over time.</p>
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title">Body Temperature</h5>
+                                                <div class="mb-3">
+                                                    <input type="number" step="0.1" min="35" max="42" class="form-control" id="temperatureInput" placeholder="36.5-37.5°C">
+                                                </div>
+                                                <button id="addTemperatureBtn" class="btn btn-primary">Add Reading</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title">Pulse Rate</h5>
+                                                <div class="mb-3">
+                                                    <input type="number" min="40" max="200" class="form-control" id="pulseInput" placeholder="60-100 BPM">
+                                                </div>
+                                                <button id="addPulseBtn" class="btn btn-primary">Add Reading</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title">Stress Level</h5>
+                                                <div class="mb-3">
+                                                    <input type="range" min="1" max="10" class="form-range" id="stressInput">
+                                                    <span id="stressValue">5</span>/10
+                                                </div>
+                                                <button id="addStressBtn" class="btn btn-primary">Add Reading</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header bg-light">
+                                                <h5 class="mb-0">Your Health Trends</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <canvas id="healthChart" width="400" height="200"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h5>Health Insights</h5>
+                                    <div id="healthInsights" class="alert alert-info">
+                                        Loading health insights...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for notifications -->
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="notificationMessage">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/recordrtc/RecordRTC.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Register service worker for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/static/service-worker.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Common elements
+            const textForm = document.getElementById('textForm');
+            const textInput = document.getElementById('textInput');
+            const responseArea = document.getElementById('responseArea');
+            const recordButton = document.getElementById('recordButton');
+            const recordingStatus = document.getElementById('recordingStatus');
+            const doctorOptions = document.querySelectorAll('.doctor-option');
+            const sendSmsBtn = document.getElementById('sendSmsBtn');
+            const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+            const notificationMessage = document.getElementById('notificationMessage');
+            const chatHistory = document.getElementById('chatHistory');
+            const clearChatBtn = document.getElementById('clearChat');
+
+            // Mental health tab elements
+            const mentalHealthForm = document.getElementById('mentalHealthForm');
+            const mentalHealthInput = document.getElementById('mentalHealthInput');
+            const mentalResponseArea = document.getElementById('mentalResponseArea');
+            const mentalChatHistory = document.getElementById('mentalChatHistory');
+            const clearMentalChatBtn = document.getElementById('clearMentalChat');
+
+            // Breathing exercise elements
+            const breathingExerciseSelect = document.getElementById('breathingExerciseSelect');
+            const startBreathingBtn = document.getElementById('startBreathingBtn');
+            const breathingCircle = document.getElementById('breathingCircle');
+            const breathingText = document.getElementById('breathingText');
+
+            // Appointment elements
+            const appointmentForm = document.getElementById('appointmentForm');
+            const appointmentDate = document.getElementById('appointmentDate');
+            const specialtySelect = document.getElementById('specialtySelect');
+            const appointmentsList = document.getElementById('appointmentsList');
+
+            // Language selector
+            const languageSelect = document.getElementById('languageSelect');
+
+            let selectedDoctor = null;
+            let recorder = null;
+            let isRecording = false;
+            let breathingExercise = null;
+            let breathingInterval = null;
+            // Add speech recognition
+            let recognition = null;
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'rw-RW'; // Default to Kinyarwanda, can be switched
+            }
+
+            // Load appointments on page load
+            loadAppointments();
+
+            // Load health tracking data
+            loadHealthData();
+
+            // Set min date for appointment selector to today
+            const today = new Date();
+            const formattedDate = today.toISOString().slice(0, 16);
+            appointmentDate.min = formattedDate;
+
+            // ---------- HEALTH ASSISTANT FUNCTIONALITY ----------
+
+            // Handle text input for health tab
+            textForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const text = textInput.value.trim();
+                if (!text) return;
+                
+                responseArea.textContent = "Processing your question...";
+                
+                // Add user message to chat history
+                addChatBubble(chatHistory, text, 'user');
+                
+                fetch('/process_text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'text_input': text,
+                        'mode': document.getElementById('textMode').value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        responseArea.textContent = "Error: " + data.error;
+                    } else {
+                        responseArea.textContent = data.response;
+                        
+                        // Add assistant message to chat history
+                        addChatBubble(chatHistory, data.response, 'assistant');
+                    }
+                    textInput.value = '';
+                })
+                .catch(error => {
+                    responseArea.textContent = "Error processing request: " + error;
+                });
+            });
+
+            // Handle voice recording
+            recordButton.addEventListener('click', function() {
+                if (!isRecording) {
+                    startRecording();
+                } else {
+                    stopRecording();
+                }
+            });
+
+            function startRecording() {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function(stream) {
+                        recorder = RecordRTC(stream, {
+                            type: 'audio',
+                            mimeType: 'audio/wav',
+                            recorderType: RecordRTC.StereoAudioRecorder,
+                            numberOfAudioChannels: 1,
+                            desiredSampRate: 44100
+                        });
+                        
+                        recorder.startRecording();
+                        isRecording = true;
+                        recordButton.classList.add('recording');
+                        recordingStatus.textContent = "Recording... (Click to stop)";
+                        
+                        // Start real-time speech recognition if available
+                        if (recognition) {
+                            let tempTranscript = '';
+                            responseArea.textContent = "Listening... (Speech will appear here)";
+                            
+                            recognition.onresult = function(event) {
+                                tempTranscript = '';
+                                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                                    if (event.results[i].isFinal) {
+                                        tempTranscript += event.results[i][0].transcript;
+                                    } else {
+                                        tempTranscript += event.results[i][0].transcript;
+                                    }
+                                }
+                                responseArea.textContent = "Transcribing: " + tempTranscript;
+                            };
+                            
+                            recognition.start();
+                        }
+                        
+                        // Auto-stop after 10 seconds
+                        setTimeout(stopRecording, 10000);
+                    })
+                    .catch(function(error) {
+                        console.error('Error accessing microphone:', error);
+                        recordingStatus.textContent = "Error accessing microphone: " + error.message;
+                    });
+            }
+
+            function stopRecording() {
+                if (!recorder) return;
+                
+                // Stop speech recognition if active
+                if (recognition) {
+                    recognition.stop();
+                }
+                
+                recorder.stopRecording(function() {
+                    let blob = recorder.getBlob();
+                    isRecording = false;
+                    recordButton.classList.remove('recording');
+                    recordingStatus.textContent = "Processing audio...";
+                    
+                    let formData = new FormData();
+                    formData.append('audio', blob, 'recording.wav');
+                    
+                    fetch('/process_audio', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            responseArea.textContent = "Error: " + data.error;
+                        } else {
+                            responseArea.textContent = data.response;
+                            // Add message to chat history
+                            addChatBubble(chatHistory, data.response, 'assistant');
+                        }
+                        recordingStatus.textContent = "Click to start recording";
+                    })
+                    .catch(error => {
+                        responseArea.textContent = "Error processing audio: " + error;
+                        recordingStatus.textContent = "Click to start recording";
+                    });
+                });
+            }
+
+            // Handle doctor selection
+            doctorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const specialty = this.dataset.specialty;
+                    const number = this.dataset.number;
+                    
+                    document.getElementById('doctorDropdown').textContent = specialty;
+                    selectedDoctor = { specialty, number };
+                    sendSmsBtn.disabled = false;
+                });
+            });
+
+            // Handle SMS sending
+            sendSmsBtn.addEventListener('click', function() {
+                if (!selectedDoctor) return;
+                
+                const caseSummary = responseArea.textContent;
+                
+                fetch('/send_sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        doctor_number: selectedDoctor.number,
+                        case_summary: caseSummary
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    notificationMessage.textContent = data.message;
+                    notificationModal.show();
+                })
+                .catch(error => {
+                    notificationMessage.textContent = "Error sending SMS: " + error;
+                    notificationModal.show();
+                });
+            });
+
+            // Clear chat history
+            clearChatBtn.addEventListener('click', function() {
+                chatHistory.innerHTML = '';
+                responseArea.textContent = "Chat history cleared. How can I help you today?";
+            });
+
+            // ---------- MENTAL HEALTH FUNCTIONALITY ----------
+
+            // Handle mental health form submission
+            mentalHealthForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const text = mentalHealthInput.value.trim();
+                if (!text) return;
+                
+                mentalResponseArea.textContent = "Processing your input...";
+                
+                // Add user message to chat history
+                addChatBubble(mentalChatHistory, text, 'user');
+                
+                fetch('/process_text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'text_input': text,
+                        'mode': document.getElementById('mentalHealthMode').value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        mentalResponseArea.textContent = "Error: " + data.error;
+                    } else {
+                        mentalResponseArea.textContent = data.response;
+                        
+                        // Add assistant message to chat history
+                        addChatBubble(mentalChatHistory, data.response, 'assistant');
+                    }
+                    mentalHealthInput.value = '';
+                })
+                .catch(error => {
+                    mentalResponseArea.textContent = "Error processing request: " + error;
+                });
+            });
+
+            // Clear mental health chat history
+            clearMentalChatBtn.addEventListener('click', function() {
+                mentalChatHistory.innerHTML = '';
+                mentalResponseArea.textContent = "Chat history cleared. How are you feeling today?";
+            });
+
+            // ---------- BREATHING EXERCISE FUNCTIONALITY ----------
+
+            // Start breathing exercise
+            startBreathingBtn.addEventListener('click', function() {
+                if (breathingInterval) {
+                    clearInterval(breathingInterval);
+                    breathingInterval = null;
+                    startBreathingBtn.innerHTML = '<i class="bi bi-play-fill"></i> Start Exercise';
+                    breathingText.textContent = "Ready";
+                    breathingCircle.style.transform = 'scale(1)';
+                    return;
+                }
+                
+                // Get selected exercise
+                const exerciseType = breathingExerciseSelect.value;
+                
+                // Fetch exercise data
+                fetch(`/breathing_exercise?type=${exerciseType}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let currentStep = 0;
+                        const steps = data.steps;
+                        
+                        startBreathingBtn.innerHTML = '<i class="bi bi-stop-fill"></i> Stop Exercise';
+                        
+                        function runBreathingStep() {
+                            const step = steps[currentStep % steps.length];
+                            breathingText.textContent = step.action.charAt(0).toUpperCase() + step.action.slice(1);
+                            
+                            if (step.action === 'inhale') {
+                                breathingCircle.style.transform = 'scale(1.5)';
+                            } else if (step.action === 'exhale') {
+                                breathingCircle.style.transform = 'scale(0.8)';
+                            } else {
+                                breathingCircle.style.transform = 'scale(1.2)';
+                            }
+                            
+                            setTimeout(() => {
+                                currentStep++;
+                                if (breathingInterval) {
+                                    runBreathingStep();
+                                }
+                            }, step.duration * 1000);
+                        }
+                        
+                        runBreathingStep();
+                        breathingInterval = true; // Just a flag, not actually using setInterval
+                    })
+                    .catch(error => {
+                        console.error('Error loading breathing exercise:', error);
+                        notificationMessage.textContent = "Error loading breathing exercise.";
+                        notificationModal.show();
+                    });
+            });
+
+            // ---------- APPOINTMENT FUNCTIONALITY ----------
+
+            // Handle appointment form submission
+            appointmentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const date = appointmentDate.value;
+                const specialty = specialtySelect.value;
+                
+                if (!date || !specialty) return;
+                
+                fetch('/add_appointment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        date: date,
+                        specialty: specialty
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        notificationMessage.textContent = "Appointment scheduled successfully!";
+                        notificationModal.show();
+                        loadAppointments();
+                        appointmentForm.reset();
+                    } else {
+                        notificationMessage.textContent = "Error: " + data.message;
+                        notificationModal.show();
+                    }
+                })
+                .catch(error => {
+                    notificationMessage.textContent = "Error scheduling appointment: " + error;
+                    notificationModal.show();
+                });
+            });
+
+            // Load appointments
+            function loadAppointments() {
+                fetch('/get_appointments')
+                    .then(response => response.json())
+                    .then(data => {
+                        const appointments = data.appointments;
+                        
+                        if (appointments.length === 0) {
+                            appointmentsList.innerHTML = '<p class="text-muted">No appointments scheduled yet.</p>';
+                            return;
+                        }
+                        
+                        appointmentsList.innerHTML = '';
+                        
+                        appointments.forEach(appointment => {
+                            const date = new Date(appointment.date);
+                            const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                            
+                            const appointmentCard = document.createElement('div');
+                            appointmentCard.className = 'appointment-card';
+                            appointmentCard.innerHTML = `
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">${appointment.specialty}</h5>
+                                        <p class="mb-0 text-muted"><i class="bi bi-calendar"></i> ${formattedDate}</p>
+                                    </div>
+                                    <span class="badge bg-success">Scheduled</span>
+                                </div>
+                            `;
+                            
+                            appointmentsList.appendChild(appointmentCard);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error loading appointments:', error);
+                    });
+            }
+
+            // Load health tracking data
+            function loadHealthData() {
+                fetch('/health_tracking')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateHealthChart(data);
+                        updateHealthInsights(data);
+                    })
+                    .catch(error => {
+                        console.error('Error loading health data:', error);
+                    });
+            }
+
+            // Update stress value display when slider changes
+            document.getElementById('stressInput').addEventListener('input', function() {
+                document.getElementById('stressValue').textContent = this.value;
+            });
+            
+            // Health tracking metrics submission buttons
+            document.getElementById('addTemperatureBtn').addEventListener('click', function() {
+                const value = parseFloat(document.getElementById('temperatureInput').value);
+                if (isNaN(value) || value < 35 || value > 42) {
+                    notificationMessage.textContent = "Please enter a valid temperature (35-42°C)";
+                    notificationModal.show();
+                    return;
+                }
+                addHealthMetric('temperature', value);
+            });
+            
+            document.getElementById('addPulseBtn').addEventListener('click', function() {
+                const value = parseInt(document.getElementById('pulseInput').value);
+                if (isNaN(value) || value < 40 || value > 200) {
+                    notificationMessage.textContent = "Please enter a valid pulse rate (40-200 BPM)";
+                    notificationModal.show();
+                    return;
+                }
+                addHealthMetric('pulse', value);
+            });
+            
+            document.getElementById('addStressBtn').addEventListener('click', function() {
+                const value = parseInt(document.getElementById('stressInput').value);
+                addHealthMetric('stress', value);
+            });
+            
+            // Health chart
+            let healthChart = null;
+            
+            function addHealthMetric(metric, value) {
+                fetch('/health_tracking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        metric: metric,
+                        value: value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`${metric}Input`).value = '';
+                        loadHealthData();
+                    } else {
+                        notificationMessage.textContent = "Error: " + data.message;
+                        notificationModal.show();
+                    }
+                })
+                .catch(error => {
+                    notificationMessage.textContent = "Error saving health data: " + error;
+                    notificationModal.show();
+                });
+            }
+            
+            function updateHealthChart(data) {
+                const ctx = document.getElementById('healthChart').getContext('2d');
+                
+                // Prepare data for chart
+                const datasets = [];
+                const labels = [];
+                
+                if (data.temperature && data.temperature.length > 0) {
+                    const tempData = data.temperature.map(item => ({
+                        x: new Date(item.timestamp),
+                        y: item.value
+                    }));
+                    
+                    datasets.push({
+                        label: 'Temperature (°C)',
+                        data: tempData,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        yAxisID: 'y-temperature'
+                    });
+                }
+                
+                if (data.pulse && data.pulse.length > 0) {
+                    const pulseData = data.pulse.map(item => ({
+                        x: new Date(item.timestamp),
+                        y: item.value
+                    }));
+                    
+                    datasets.push({
+                        label: 'Pulse (BPM)',
+                        data: pulseData,
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        yAxisID: 'y-pulse'
+                    });
+                }
+                
+                if (data.stress && data.stress.length > 0) {
+                    const stressData = data.stress.map(item => ({
+                        x: new Date(item.timestamp),
+                        y: item.value
+                    }));
+                    
+                    datasets.push({
+                        label: 'Stress (1-10)',
+                        data: stressData,
+                        borderColor: 'rgb(255, 159, 64)',
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        yAxisID: 'y-stress'
+                    });
+                }
+                
+                // Create or update chart
+                if (healthChart) {
+                    healthChart.data.datasets = datasets;
+                    healthChart.update();
+                } else {
+                    healthChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: datasets
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: {
+                                        unit: 'day'
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Date'
+                                    }
+                                },
+                                'y-temperature': {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
+                                    title: {
+                                        display: true,
+                                        text: 'Temperature (°C)'
+                                    },
+                                    min: 35,
+                                    max: 40
+                                },
+                                'y-pulse': {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    title: {
+                                        display: true,
+                                        text: 'Pulse (BPM)'
+                                    },
+                                    grid: {
+                                        drawOnChartArea: false
+                                    },
+                                    min: 40,
+                                    max: 120
+                                },
+                                'y-stress': {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    title: {
+                                        display: true,
+                                        text: 'Stress (1-10)'
+                                    },
+                                    grid: {
+                                        drawOnChartArea: false
+                                    },
+                                    min: 1,
+                                    max: 10
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            function updateHealthInsights(data) {
+                const insightsDiv = document.getElementById('healthInsights');
+                
+                // Simple insights logic
+                let insights = [];
+                
+                if (data.temperature && data.temperature.length > 0) {
+                    const latestTemp = data.temperature[data.temperature.length - 1].value;
+                    if (latestTemp > 37.5) {
+                        insights.push(`Your temperature (${latestTemp}°C) is elevated. Consider resting and staying hydrated.`);
+                    } else if (latestTemp < 36) {
+                        insights.push(`Your temperature (${latestTemp}°C) is lower than normal. Stay warm.`);
+                    } else {
+                        insights.push(`Your temperature (${latestTemp}°C) is within normal range.`);
+                    }
+                }
+                
+                if (data.pulse && data.pulse.length > 0) {
+                    const latestPulse = data.pulse[data.pulse.length - 1].value;
+                    if (latestPulse > 100) {
+                        insights.push(`Your pulse rate (${latestPulse} BPM) is elevated. Try relaxation techniques.`);
+                    } else if (latestPulse < 60) {
+                        insights.push(`Your pulse rate (${latestPulse} BPM) is lower than average. This may be normal for physically fit individuals.`);
+                    } else {
+                        insights.push(`Your pulse rate (${latestPulse} BPM) is within normal range.`);
+                    }
+                }
+                
+                if (data.stress && data.stress.length > 0) {
+                    const latestStress = data.stress[data.stress.length - 1].value;
+                    if (latestStress > 7) {
+                        insights.push(`Your stress level (${latestStress}/10) is high. Consider using our breathing exercises.`);
+                    } else if (latestStress < 4) {
+                        insights.push(`Your stress level (${latestStress}/10) is low. Great job managing stress!`);
+                    } else {
+                        insights.push(`Your stress level (${latestStress}/10) is moderate.`);
+                    }
+                }
+                
+                if (insights.length === 0) {
+                    insightsDiv.innerHTML = 'No health data available yet. Add your first reading to get insights.';
+                } else {
+                    insightsDiv.innerHTML = '<ul>' + insights.map(insight => `<li>${insight}</li>`).join('') + '</ul>';
+                }
+            }
+
+            // Add language selector functionality
+            languageSelect.addEventListener('change', function() {
+                const selectedLang = this.value;
+                if (recognition) {
+                    recognition.lang = selectedLang;
+                }
+                
+                // Update interface placeholders based on language
+                if (selectedLang === 'rw-RW') {
+                    textInput.placeholder = "Andika ikibazo cyawe cy'ubuzima hano...";
+                    mentalHealthInput.placeholder = "Wiyumva umeze ute uyu munsi?";
+                    document.querySelector("#health-tab button").innerHTML = '<i class="bi bi-heart-pulse"></i> Ubufasha bw\'Ubuzima';
+                    document.querySelector("#mental-tab button").innerHTML = '<i class="bi bi-emoji-smile"></i> Ubuzima bwo mu mutwe';
+                    document.querySelector("#breathing-tab button").innerHTML = '<i class="bi bi-wind"></i> Imyitozo yo guhumeka';
+                    document.querySelector("#appointment-tab button").innerHTML = '<i class="bi bi-calendar-check"></i> Gusaba Guhura na Muganga';
+                    document.querySelector("#health-tracking-tab button").innerHTML = '<i class="bi bi-activity"></i> Gutracka Ubuzima';
+                } else {
+                    textInput.placeholder = "Type your medical question here...";
+                    mentalHealthInput.placeholder = "How are you feeling today?";
+                    document.querySelector("#health-tab button").innerHTML = '<i class="bi bi-heart-pulse"></i> Health Assistant';
+                    document.querySelector("#mental-tab button").innerHTML = '<i class="bi bi-emoji-smile"></i> Mental Wellness';
+                    document.querySelector("#breathing-tab button").innerHTML = '<i class="bi bi-wind"></i> Breathing Exercises';
+                    document.querySelector("#appointment-tab button").innerHTML = '<i class="bi bi-calendar-check"></i> Appointments';
+                    document.querySelector("#health-tracking-tab button").innerHTML = '<i class="bi bi-activity"></i> Health Tracking';
+                }
+            });
+
+            // ---------- HELPER FUNCTIONS ----------
+
+            // Add chat bubble to history
+            function addChatBubble(container, text, type) {
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${type}`;
+                bubble.textContent = text;
+                
+                container.appendChild(bubble);
+                container.scrollTop = container.scrollHeight;
+            }
+
+            // Global voice command system
+            let voiceCommandsEnabled = false;
+            const voiceCommands = {
+                'open health': () => document.querySelector('#health-tab').click(),
+                'open mental': () => document.querySelector('#mental-tab').click(),
+                'open breathing': () => document.querySelector('#breathing-tab').click(),
+                'open appointments': () => document.querySelector('#appointment-tab').click(),
+                'open tracking': () => document.querySelector('#health-tracking-tab').click(),
+                'start breathing': () => document.querySelector('#startBreathingBtn').click(),
+                'start recording': () => {
+                    if (!isRecording) startRecording();
+                },
+                'stop recording': () => {
+                    if (isRecording) stopRecording();
+                },
+                'clear chat': () => document.querySelector('#clearChat').click()
+            };
+            
+            // Initialize voice commands if speech recognition is available
+            if ('webkitSpeechRecognition' in window) {
+                const voiceCommandRecognition = new webkitSpeechRecognition();
+                voiceCommandRecognition.continuous = true;
+                voiceCommandRecognition.interimResults = false;
+                voiceCommandRecognition.lang = 'en-US'; // Default to English for commands
+                
+                // Add button for voice commands in the UI
+                const navContainer = document.querySelector('.container .row.mb-4');
+                const voiceCommandBtn = document.createElement('div');
+                voiceCommandBtn.className = 'position-fixed bottom-0 end-0 m-4';
+                voiceCommandBtn.innerHTML = `
+                    <button class="btn btn-lg btn-primary rounded-circle" id="voiceCommandBtn" title="Voice Commands">
+                        <i class="bi bi-mic"></i>
+                    </button>
+                `;
+                document.body.appendChild(voiceCommandBtn);
+                
+                document.getElementById('voiceCommandBtn').addEventListener('click', function() {
+                    if (voiceCommandsEnabled) {
+                        voiceCommandRecognition.stop();
+                        voiceCommandsEnabled = false;
+                        this.classList.remove('btn-danger');
+                        this.classList.add('btn-primary');
+                        notificationMessage.textContent = "Voice commands disabled";
+                        notificationModal.show();
+                    } else {
+                        voiceCommandRecognition.start();
+                        voiceCommandsEnabled = true;
+                        this.classList.remove('btn-primary');
+                        this.classList.add('btn-danger');
+                        notificationMessage.textContent = "Voice commands enabled. Try saying 'open health' or 'start recording'";
+                        notificationModal.show();
+                    }
+                });
+                
+                voiceCommandRecognition.onresult = function(event) {
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            const command = event.results[i][0].transcript.trim().toLowerCase();
+                            console.log('Voice command detected:', command);
+                            
+                            // Check if command matches any known commands
+                            for (const [trigger, action] of Object.entries(voiceCommands)) {
+                                if (command.includes(trigger)) {
+                                    action();
+                                    notificationMessage.textContent = `Command executed: ${trigger}`;
+                                    notificationModal.show();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                voiceCommandRecognition.onerror = function(event) {
+                    console.error('Voice command error:', event.error);
+                    voiceCommandsEnabled = false;
+                    document.getElementById('voiceCommandBtn').classList.remove('btn-danger');
+                    document.getElementById('voiceCommandBtn').classList.add('btn-primary');
+                };
+            }
+        });
+    </script>
+</body>
+</html>
