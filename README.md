@@ -17,7 +17,8 @@ Why It Matters
     * Scalable: This solution can grow to serve more regions and languages across Africa.
     * Empowering: It puts healthcare and mental health support in the hands of those who need it most.
 ## How It Works 
-![Design_](https://github.com/user-attachments/assets/fe311263-9365-4cd3-87ef-52c9c4812d64)
+ ![Design_](https://github.com/user-attachments/assets/8962cbd3-80e6-4f85-b781-57710a66e9d7)
+
 ## Prerequisites
 
 - Python 3.8 or higher
