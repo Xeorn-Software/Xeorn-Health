@@ -10,6 +10,7 @@ import json
 from datetime import datetime, timedelta
 import uuid
 import random  # For generating mock health data
+import re
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))  # For session management
@@ -105,15 +106,26 @@ def get_llm_response(input_text, system_prompt=None):
 
 def clean_markdown(text):
     """Clean markdown formatting from text"""
-    import re
-    # Remove bold/italic markdown
-    text = re.sub(r'\*\*|\*|__|\|_', '', text)
-    # Remove code blocks and inline code
-    text = re.sub(r'```[\s\S]*?```|`[^`]*`', '', text)
-    # Fix spacing issues
-    text = re.sub(r'\s+', ' ', text)
-    # Fix numbering
-    text = re.sub(r'(\d+)\.\s+', r'\1. ', text)
+    # Remove headings (# Heading)
+    text = re.sub(r'#+ +', '', text)
+    
+    # Remove bold/italic formatting
+    text = re.sub(r'\*\*(.*?)\*\*', r'\1', text)
+    text = re.sub(r'\*(.*?)\*', r'\1', text)
+    
+    # Remove bullet points
+    text = re.sub(r'^\s*\* +', '', text, flags=re.MULTILINE)
+    
+    # Remove code blocks
+    text = re.sub(r'```.*?```', lambda m: m.group(0).replace('```', ''), text, flags=re.DOTALL)
+    
+    # Remove inline code
+    text = re.sub(r'`(.*?)`', r'\1', text)
+    
+    # Remove excessive whitespace
+    text = re.sub(r'\n\s*\n', '\n\n', text)
+    text = re.sub(r'^\s+', '', text, flags=re.MULTILINE)
+    
     return text.strip()
 
 def process_text_input(prompt, mode="health"):
@@ -138,13 +150,18 @@ def process_text_input(prompt, mode="health"):
                 print(f"Translation error: {str(e)}")
                 # Continue with English response if translation fails
         
-        # Update session history
-        if 'chat_history' in session:
-            session['chat_history'].append({
-                'user': prompt,
-                'assistant': response,
-                'timestamp': datetime.now().isoformat()
-            })
+        # Update session history if in a Flask request context
+        try:
+            from flask import session, has_request_context
+            if has_request_context() and 'chat_history' in session:
+                session['chat_history'].append({
+                    'user': prompt,
+                    'assistant': response,
+                    'timestamp': datetime.now().isoformat()
+                })
+        except Exception as e:
+            # Just continue if we can't update the session (e.g., during testing)
+            print(f"Note: Could not update session history: {str(e)}")
             
         return response
     except Exception as e:
@@ -153,11 +170,29 @@ def process_text_input(prompt, mode="health"):
 
 def detect_english(text):
     """Simple language detection - checks if text is likely English"""
-    # This is a very simple heuristic - could be replaced with a proper language detection library
-    english_words = ['the', 'is', 'and', 'of', 'to', 'in', 'that', 'have', 'it', 'for', 'not', 'on', 'with']
-    text_lower = text.lower()
-    english_word_count = sum(1 for word in english_words if f" {word} " in f" {text_lower} ")
-    return english_word_count > 1 or len(text) < 10
+    # This is a very basic approach - English common words
+    english_words = {'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i', 
+                    'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at',
+                    'this', 'but', 'his', 'by', 'from', 'they', 'we', 'say', 'her', 'she',
+                    'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what',
+                    'so', 'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me',
+                    'when', 'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take',
+                    'people', 'into', 'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other',
+                    'than', 'then', 'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also',
+                    'back', 'after', 'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way',
+                    'hello', 'hi', 'how', 'are', 'you', 'feel', 'feeling', 'today', 'help', 'need'}
+    
+    # Clean and tokenize the text
+    words = re.findall(r'\b\w+\b', text.lower())
+    
+    if not words:
+        return True  # Default to English for empty input
+    
+    # Count English words
+    english_count = sum(1 for word in words if word in english_words)
+    
+    # If more than 40% of words are recognized English words, consider it English
+    return (english_count / len(words)) > 0.4
 
 def process_audio_input(audio_file):
     """Process audio input and return response in Kinyarwanda"""
@@ -189,13 +224,18 @@ def process_audio_input(audio_file):
         import random
         response = default_response + " " + random.choice(health_tips)
         
-        # Add to conversation history
-        if 'chat_history' in session:
-            session['chat_history'].append({
-                'user': "[Audio Input]",
-                'assistant': response,
-                'timestamp': datetime.now().isoformat()
-            })
+        # Add to conversation history if in a Flask request context
+        try:
+            from flask import session, has_request_context
+            if has_request_context() and 'chat_history' in session:
+                session['chat_history'].append({
+                    'user': "[Audio Input]",
+                    'assistant': response,
+                    'timestamp': datetime.now().isoformat()
+                })
+        except Exception as e:
+            # Just continue if we can't update the session (e.g., during testing)
+            print(f"Note: Could not update session history: {str(e)}")
             
         return response
     except Exception as e:
@@ -294,15 +334,26 @@ def handle_audio():
 @app.route('/send_sms', methods=['POST'])
 def handle_sms():
     """Send SMS to doctor"""
-    data = request.json
-    doctor_number = data.get('doctor_number')
-    case_summary = data.get('case_summary')
-    
-    if not doctor_number or not case_summary:
-        return jsonify({"success": False, "message": "Missing required information"}), 400
-    
-    success, message = send_sms_notification(doctor_number, case_summary)
-    return jsonify({"success": success, "message": message})
+    try:
+        data = request.json
+        
+        if not data or 'doctor_number' not in data or 'case_summary' not in data:
+            return jsonify({
+                "success": False,
+                "message": "Missing doctor number or case summary"
+            })
+        
+        doctor_number = data.get('doctor_number')
+        case_summary = data.get('case_summary')
+        
+        result = send_sms_notification(doctor_number, case_summary)
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error handling SMS request: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": "Error processing SMS request"
+        })
 
 @app.route('/get_history', methods=['GET'])
 def get_history():
