@@ -1,118 +1,23 @@
-## Description 
-Voice-AI Healthcare Assistant for Rural and Urban Communities
-What It Does
-1. For Rural Communities: Imagine a farmer in a remote village who’s feeling unwell. They open the app, speak in Kinyarwanda, and describe their symptoms. The app translates their words and sends them to a doctor. The doctor reviews the symptoms and sends back advice via SMS. If it’s urgent, the doctor can even call the patient directly.
-2. For Urban Communities: In the city, someone feeling stressed or anxious can talk tomental health chatbot. They might say, “Ndi numva ubwoba.” (I feel anxious). The chatbot listens, offers calming techniques like breathing exercises, and suggests mindfulness tips. If the user needs more help, it connects them to a licensed therapist for professional support.Also they can use the first method.
 
-Why It Matters
-1. For Rural Areas:
-    * No More Long Journeys: People don’t have to travel hours to see a doctor.
-    * Language No Longer a Barrier: They can speak in their own language and be understood.
-    * Saves Time and Money: Quick advice means fewer trips and lower costs.
-2. For Urban Areas:
-    * Mental Health Support Anytime: People can get help without fear of judgment.
-    * Early Intervention: The chatbot helps users manage stress before it becomes a bigger problem.
-    * Connects to Professionals: For those who need it, the app links users to therapists.
-3. For Everyone:
-    * Scalable: This solution can grow to serve more regions and languages across Africa.
-    * Empowering: It puts healthcare and mental health support in the hands of those who need it most.
-## How It Works 
- ![Design_](https://github.com/user-attachments/assets/8962cbd3-80e6-4f85-b781-57710a66e9d7)
+Last week, we wrapped up an incredible hackathon at [Irembo](@Irembo), where competition was fierce and the talent was inspiring! Our team built something truly special: an **AI Healthcare Assistant** designed to empower Rwandans by giving them access to medical guidance **in their own language**—whether by voice or text.  
 
-## Prerequisites
+**Here’s how it works:**  
+**Local-Language AI:** Patients describe symptoms in **Kinyarwanda**, and our system translates queries for LLMs (like LLaMA 70B) and back—making AI as accessible as it is in English.  
+**Seamless Doctor Connect:** If a patient is unsure about the AI’s response, one click connects them to a **specialist doctor**. The AI **summarizes the case**, so no manual typing is needed—just fast, human backup when required.  
+ **Urgency Detection:** For critical cases, the system flags doctors to **call immediately**, bridging the gap between AI and live care.  
 
-- Python 3.8 or higher
-- pip (Python package manager)
-- Virtual environment (recommended)
+**Why This Matters:**  
+ **No more language barriers** – healthcare advice shouldn’t require fluency in English.  
+**No more typing struggles** – voice-first design for accessibility.  
+**Trust through hybrid care** – AI + human doctors working together.  
 
-## Installation
+**Biggest Challenge?**  
+Making **LLaMA 70B** work efficiently with **few-shot learning** for Kinyarwanda—while keeping latency low.  
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/adamlogman/Irembo-Project.git
-   cd Irembo-Project
-   ```
+Huge thanks to my amazing team [@Teammate1], [@Teammate2], and mentors at [@Irembo] for pushing boundaries with us!  
 
-2. Create and activate a virtual environment:
-   ```
-   # On Windows
-   python -m venv venv
-   venv\Scripts\activate
+**What’s next?** Scaling this to more languages—because **healthcare should meet people where they are.** 
 
-   # On macOS/Linux
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
+#AIforGood #DigitalHealth #Hackathon #LLM #Rwanda #Innovation
 
-3. Install the required dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
 
-## Running the Application
-
-1. Start the Flask development server:
-   ```
-   python app.py
-   ```
-
-2. Open your web browser and navigate to:
-   ```
-   http://127.0.0.1:5000/
-   ```
-
-## Project Structure
-
-```
-Irembo-Project/
-├── app.py
-├── templates/
-│       ├── index.html
-├── requirements.txt
-└── README.md
-```
-
-## Development
-
-To add new features or fix bugs:
-
-1. Create a new branch:
-   ```
-   git checkout -b feature/your-feature-name
-   ```
-
-2. Make your changes and commit them:
-   ```
-   git add .
-   git commit -m "Add your feature description"
-   ```
-
-3. Push your changes to the repository:
-   ```
-   git push origin feature/your-feature-name
-   ```
-
-## Testing
-
-Run the test suite with:
-```
-pytest
-```
-
-## Deployment
-
-For production deployment:
-
-1. Set up a production server (e.g., Gunicorn, uWSGI)
-2. Configure a reverse proxy (e.g., Nginx, Apache)
-3. Set appropriate environment variables for production
-
-Example with Gunicorn:
-```
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 "app:create_app()"
-```
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
